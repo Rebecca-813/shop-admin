@@ -2,11 +2,11 @@
   <el-row type="flex" class="row-bg" justify="center" align="middle">
     <el-col class="col" :xs="14" :sm="12" :md="10" :lg="8" :xl="6">
       <el-form ref="form" :model="form" label-width="80px" label-position="top" :rules="formRules">
-        <el-form-item label="用戶名" required prop="username">
+        <el-form-item label="用戶名"  prop="username">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
 
-        <el-form-item label="密碼" required prop="password">
+        <el-form-item label="密碼" prop="password">
           <el-input v-model="form.password"></el-input>
         </el-form-item>
 

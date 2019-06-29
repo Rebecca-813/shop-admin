@@ -1,3 +1,123 @@
 <template>
-    <div>這個是登錄頁面</div>
+  <el-container class="home-container">
+    <!-- 頭部 -->
+    <el-header class="home-header">
+      <el-row type="flex" align="middle">
+        <!-- 頭部左邊部分 -->
+        <el-col :span="6">
+          <img src="../assets/imgs/logo.png" alt>
+        </el-col>
+        <!-- 頭部中間部分 -->
+        <el-col>
+          <h1>電商後台管理系統</h1>
+        </el-col>
+        <!-- 頭部右邊部分 -->
+        <el-col :span="6">
+          <div>
+            歡迎上海前端31期星耀會員
+            <a href="javaScript:;" class="logout">退出</a>
+          </div>
+        </el-col>
+      </el-row>
+    </el-header>
+
+
+    <!-- 頭部下面的左邊部分 -->
+    <el-container>
+      <el-aside width="200px" class="home-aside">
+         <el-menu
+      default-active="2"
+      class="el-menu-vertical-demo"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b">
+      <el-submenu index="1">
+        <template slot="title">
+          <i class="el-icon-location"></i>
+          <span>导航一</span>
+        </template>
+        <el-menu-item-group>
+          <template slot="title">分组一</template>
+          <el-menu-item index="1-1">选项1</el-menu-item>
+          <el-menu-item index="1-2">选项2</el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group title="分组2">
+          <el-menu-item index="1-3">选项3</el-menu-item>
+        </el-menu-item-group>
+        <el-submenu index="1-4">
+          <template slot="title">选项4</template>
+          <el-menu-item index="1-4-1">选项1</el-menu-item>
+        </el-submenu>
+      </el-submenu>
+      <el-menu-item index="2">
+        <i class="el-icon-menu"></i>
+        <span slot="title">导航二</span>
+      </el-menu-item>
+      <el-menu-item index="3" disabled>
+        <i class="el-icon-document"></i>
+        <span slot="title">导航三</span>
+      </el-menu-item>
+      <el-menu-item index="4">
+        <i class="el-icon-setting"></i>
+        <span slot="title">导航四</span>
+      </el-menu-item>
+    </el-menu>
+
+
+      </el-aside>
+
+      <!-- 主內容區 -->
+      <el-main>
+        main
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
+
+<style>
+.home-container {
+  height: 100%;
+  background-color: #eaeef1;
+}
+.home-header {
+  background-color: #b3c1cd;
+}
+.home-container .home-header{
+  padding: 0;
+}
+.home-container .home-header img {
+  width: 200px;
+}
+.home-header h1 {
+  margin: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 28px;
+  font-weight: bolder;
+}
+.home-header div {
+  min-width: 235px;
+  font-weight: bold;
+}
+.home-header .logout {
+  color: #daa520;
+}
+
+
+</style>
+
+<script>
+  export default {
+    methods: {
+      handleOpen(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleClose(key, keyPath) {
+        console.log(key, keyPath);
+      }
+    }
+  }
+</script>
+
