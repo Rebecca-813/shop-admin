@@ -68,6 +68,11 @@ export default {
            
               this.$router.push("/home");
               
+            }else{
+              this.$message({
+                message:re.data.meta.msg,
+                type:"warning",
+              })
             }
           });
         }else{
