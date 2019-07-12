@@ -1,126 +1,3 @@
-<template>
-  <!-- 一個template裡面只能有一個 根目錄 -->
-  <div>
-    <!-- 麵包屑導航部分 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用戶管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用戶管理</el-breadcrumb-item>
-    </el-breadcrumb>
-
-    <!-- 搜索框部分-->
-    <el-row :span="20" :gutter="20">
-      <el-col :span="6">
-        <el-input
-          placeholder="请输入内容"
-          class="input-with-select"
-          v-model="keyword"
-          @keyup.enter.native="search"
-        >
-          <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
-        </el-input>
-      </el-col>
-      <el-col :span="6">
-        <el-button type="success" plain @click="openAddUserDialog">添加用戶</el-button>
-      </el-col>
-    </el-row>
-
-    <!-- 動態數據table表格 -->
-    <el-table :data="userList" stripe style="width: 100%">
-      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="email" label="郵箱" width="180"></el-table-column>
-      <el-table-column prop="mobile" label="電話"></el-table-column>
-
-      <!-- 用戶狀態部分 -->
-      <el-table-column label="用戶狀態" width="180" v-slot="{row}">
-        <el-switch
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-          v-model="row.mg_state"
-          @change="toggleState(row)"
-          :plain="true"
-        ></el-switch>
-      </el-table-column>
-
-      <!-- 用戶操作部分 -->
-      <el-table-column label="操作">
-        <template v-slot="{row}">
-          <el-button
-            type="primary"
-            plain
-            size="mini"
-            icon="el-icon-edit"
-            @click="openEditUserDialog(row.id)"
-          ></el-button>
-          <el-button type="danger" size="mini" plain icon="el-icon-delete" @click="deluser(row.id)">
-            <!-- <el-button type="text"  size="mini"></el-button> -->
-          </el-button>
-          <el-button type="success" size="mini" plain icon="el-icon-check">角色分配</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分頁部分 -->
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      :page-size="pagesize"
-      :current-page="currentpage"
-      @current-change="onPageChange"
-    ></el-pagination>
-
-    <!-- 添加用戶模態框 -->
-    <el-dialog title="添加用戶" :visible.sync="isAddUserDialogShow">
-      <el-form :model="addUserFromData" label-width="100px" :rules="addUserRules" ref="addUserFrom">
-        <el-form-item label="用戶名" prop="username">
-          <el-input v-model="addUserFromData.username" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密碼" prop="password">
-          <el-input v-model="addUserFromData.password" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="郵箱" prop="email">
-          <el-input v-model="addUserFromData.email" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="電話" prop="mobile">
-          <el-input v-model="addUserFromData.mobile" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="isAddUserDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 修改模態框 -->
-    <el-dialog title="修改用戶信息" :visible.sync="isEditUserDialogShow">
-      <el-form
-        :model="editUserFromData"
-        label-width="100px"
-        :rules="editUserRules"
-        ref="editUserFrom"
-      >
-        <el-form-item label="用戶名" prop="username">
-          <el-input v-text="editUserFromData.username" autocomplete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item label="郵箱" prop="email">
-          <el-input v-model="editUserFromData.email" autocomplete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item label="電話" prop="mobile">
-          <el-input v-model="editUserFromData.mobile" autocomplete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="isEditUserDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="editUser">确 定</el-button>
-      </div>
-    </el-dialog>
-  </div>
-</template> 
-
-<script>
 import axios from "axios";
 export default {
   data() {
@@ -133,6 +10,7 @@ export default {
       keyword: "",
       isAddUserDialogShow: false,
       isEditUserDialogShow: false,
+      isAssginUserDialogShow: false,
       addUserFromData: {
         username: "",
         password: "",
@@ -202,7 +80,12 @@ export default {
             trigger: "change"
           }
         ]
-      }
+      },
+      assginRoleData: {
+        username: "",
+        rid: "",
+      },
+      rolesList: ""
     };
   },
 
@@ -235,13 +118,14 @@ export default {
       this.getUserList();
     },
     search() {
-      console.log(this.keyword);
+      // console.log(this.keyword);
       //此時需要從後台那最新的數據，並且通過關鍵字進行返回
+      this.currentpage = 1
       this.getUserList();
     },
     //切換用戶狀態，，需要發送ajax，請求後台的shuju
     async toggleState(user) {
-      console.log(user);
+      // console.log(user);
       let res = await axios({
         url: `http://localhost:8888/api/private/v1/users/${user.id}/state/${user.mg_state}`,
         method: "put",
@@ -249,9 +133,9 @@ export default {
           Authorization: localStorage.getItem("token")
         }
       });
-      console.log("fasong ");
+      // console.log("fasong ");
       if (res.data.meta.status == 200) {
-        console.log("hahah");
+        // console.log("hahah");
         this.$message({
           type: "success",
           message: res.data.meta.msg
@@ -344,7 +228,7 @@ export default {
       //表單校驗成功之後，發送ajax請求
       try {
         let valid = await this.$refs.addUserFrom.validate();
-        console.log("效驗成功了");
+        // console.log("效驗成功了");
         let res = await axios({
           url: "http://localhost:8888/api/private/v1/users",
           method: "post",
@@ -365,7 +249,7 @@ export default {
             message: res.data.meta.msg
           });
         }
-      } catch (err) {}
+      } catch (err) { }
       this.currentpage = 1;
       this.isAddUserDialogShow = false;
     },
@@ -399,23 +283,57 @@ export default {
             Authorization: localStorage.getItem("token")
           }
         });
-        console.log(res)
-        if(res.data.meta.status==200){
-          this.getUserList()
-          this.isEditUserDialogShow=false
+        // console.log(res);
+        if (res.data.meta.status == 200) {
+          this.getUserList();
+          this.isEditUserDialogShow = false;
         }
-      } catch (err) {}
+      } catch (err) { }
+    },
+
+    //角色分配
+    //1.點擊分配角色按鈕
+    async assgin(row) {
+      this.isAssginUserDialogShow = true
+      let res = await axios({
+        url: `http://localhost:8888/api/private/v1/users/${row.id}`,
+        method: "get",
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      })
+      // console.log(res)
+      this.assginRoleData = res.data.data
+
+      let roleResult = await axios({
+        url: "http://localhost:8888/api/private/v1/roles",
+        method: "get",
+        headers: {
+          Authorization: localStorage.getItem("token")
+        },
+      })
+      // console.log(roleResult)
+      this.rolesList = roleResult.data.data
+    },
+
+    //1.2點擊確定按鈕
+    async assginUser(){
+      let res =await axios({
+        url:`http://localhost:8888/api/private/v1/users/${this.assginRoleData.id}/role`,
+        method:"put",
+        headers: {
+          Authorization: localStorage.getItem("token")
+        },
+        data:{
+          rid:this.assginRoleData.rid
+        }
+      })
+      // console.log(res)
+      this.$message({
+        type:"success",
+        message:res.data.meta.msg
+      })
+      this.isAssginUserDialogShow=false
     }
   }
 };
-</script>
-
-<style>
-.el-breadcrumb.breadcrumb {
-  font-size: 16px;
-  height: 50px;
-  line-height: 50px;
-  background-color: #d4dae0;
-}
-</style>
-

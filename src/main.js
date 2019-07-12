@@ -6,6 +6,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './assets/css/index.css';
 
 
+var ElTreeGrid = require('element-tree-grid');
+Vue.component(ElTreeGrid.name,ElTreeGrid);
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
@@ -15,6 +17,8 @@ router.beforeEach((to,from,next)=>{
   // console.log("導航守衛工作啦")
   if(to.path==='/login'){
     next()
+
+    
     return
   }
 

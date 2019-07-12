@@ -26,8 +26,8 @@ export default {
   data() {
     return {
       form: {
-        username: "admin",
-        password: "123456"
+        username: "",
+        password: ""
       },
       formRules: {
         username: [
@@ -84,7 +84,7 @@ export default {
       this.$refs[formName].resetFields();
     }
   }
-};
+}; 
 </script>
 <style>
 .row-bg {
